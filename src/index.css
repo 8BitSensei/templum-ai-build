@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --font-headline: "Newsreader", serif;
+  --font-body: "Noto Serif", serif;
+  --font-label: "Public Sans", sans-serif;
+
+  --color-surface: #fff8f1;
+  --color-surface-container-low: #faf3e9;
+  --color-surface-container: #f4ede4;
+  --color-surface-container-high: #eee7de;
+  --color-surface-container-highest: #e8e1d9;
+  --color-surface-container-lowest: #ffffff;
+  
+  --color-primary: #2a464f;
+  --color-primary-container: #425e67;
+  --color-on-primary: #ffffff;
+  
+  --color-secondary: #4e6168;
+  --color-secondary-container: #cee3eb;
+  --color-on-secondary-container: #52666d;
+
+  --color-tertiary: #3d4349;
+  --color-outline: #72787a;
+  --color-on-surface: #1e1b16;
+  --color-on-surface-variant: #42484a;
+}
+
+@layer base {
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+  body {
+    @apply bg-surface text-on-surface font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+  }
+}
+
+@layer components {
+  .glass-nav {
+    @apply backdrop-blur-md bg-white/80 border-b border-black/5;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-on-primary px-8 py-3 font-label text-[12px] uppercase tracking-widest transition-all hover:bg-primary-container active:scale-95;
+  }
+
+  .btn-outline {
+    @apply border border-primary/20 text-primary px-8 py-3 font-label text-[12px] uppercase tracking-widest transition-all hover:bg-surface-container-high active:scale-95;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-outline/30 rounded-full;
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Templum",
+  "description": "A scholarly digital archive for archaeological research, mapping human history through digital precision.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
