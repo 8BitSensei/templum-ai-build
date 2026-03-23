@@ -13,8 +13,8 @@ const Home = () => {
   const [certainty, setCertainty] = useState('All Certainty');
 
   const featuredSites = useMemo(() => {
-    // Pick some interesting sites as featured
-    return sites.slice(0, 3);
+    // Show the three latest sites added to the dataset
+    return [...sites].slice(-3).reverse();
   }, [sites]);
 
   const handleQuery = () => {
@@ -42,7 +42,7 @@ const Home = () => {
           transition={{ delay: 0.2 }}
           className="text-6xl md:text-7xl text-primary mb-6 max-w-4xl leading-tight"
         >
-          Unearthing the stories of antiquity through digital precision.
+          Cataloguing Temples, Shrines, and Churches, in Britain and Ireland
         </motion.h1>
         <motion.p 
           initial={{ y: 20, opacity: 0 }}
@@ -50,7 +50,7 @@ const Home = () => {
           transition={{ delay: 0.3 }}
           className="text-lg text-on-surface-variant max-w-2xl mb-12 font-body"
         >
-          An expansive repository for archaeological discovery, mapping the fragments of human history into a unified scholarly narrative.
+          Welcome to Templum, an open-source amateur project to provide a dataset of Temples, Shrines, and Churches in Britain & Ireland. If you see a mistake or would like to add data please reach out.
         </motion.p>
 
         {/* Search Bar */}
@@ -130,8 +130,8 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-end mb-12">
             <div>
-              <span className="font-label text-[12px] text-outline uppercase tracking-[0.2em] block mb-2">Curated Excavations</span>
-              <h2 className="text-4xl text-primary">Featured Archaeological Sites</h2>
+              <span className="font-label text-[12px] text-outline uppercase tracking-[0.2em] block mb-2">Latest Additions</span>
+              <h2 className="text-4xl text-primary">Recently Added Sites</h2>
             </div>
             <Link to="/sites" className="font-label text-sm text-primary border-b-2 border-primary/20 hover:border-primary transition-all pb-1">
               VIEW ALL SITES
@@ -150,7 +150,7 @@ const Home = () => {
                 <Link to={`/sites/${featuredSites[0].id}`} className="block h-full p-12 flex flex-col justify-end">
                   <div className="relative z-10">
                     <div className="bg-secondary-container inline-block px-3 py-1 mb-4">
-                      <span className="font-label text-[10px] text-on-secondary-container uppercase tracking-widest">FEATURED SITE</span>
+                      <span className="font-label text-[10px] text-on-secondary-container uppercase tracking-widest">LATEST ADDITION</span>
                     </div>
                     <h3 className="text-5xl text-primary mb-4 italic">{featuredSites[0].name}</h3>
                     <p className="text-on-surface-variant max-w-xl text-lg leading-relaxed font-body line-clamp-3">
@@ -195,37 +195,6 @@ const Home = () => {
               <p className="font-body text-on-surface-variant italic">No featured sites available at this time.</p>
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Mission & Stats */}
-      <section className="px-8 py-32 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-        <div>
-          <span className="font-label text-[12px] text-outline uppercase tracking-[0.2em] block mb-4">Mission Statement</span>
-          <h2 className="text-5xl text-primary leading-tight mb-8 italic">Preserving the past for a resilient future.</h2>
-          <div className="space-y-6 font-body text-lg text-on-surface-variant leading-relaxed">
-            <p>Templum is a non-profit consortium dedicated to the digitization and preservation of endangered archaeological sites.</p>
-            <p>Our methodology emphasizes transparency and open-source data, ensuring that the chiseled inscriptions of the past remain legible for generations to come.</p>
-          </div>
-        </div>
-        <div className="bg-surface-container-highest p-10 relative">
-          <div className="absolute -top-4 -left-4 w-20 h-20 border-t-2 border-l-2 border-primary/20"></div>
-          <div className="absolute -bottom-4 -right-4 w-20 h-20 border-b-2 border-r-2 border-primary/20"></div>
-          <h4 className="font-label text-[10px] text-primary uppercase tracking-widest mb-6">Archive Statistics</h4>
-          <div className="space-y-8">
-            <div className="flex justify-between items-baseline border-b border-outline/10 pb-4">
-              <span className="font-body italic text-on-surface-variant">Documented Sites</span>
-              <span className="text-4xl text-primary">1,248</span>
-            </div>
-            <div className="flex justify-between items-baseline border-b border-outline/10 pb-4">
-              <span className="font-body italic text-on-surface-variant">Artifact Scans</span>
-              <span className="text-4xl text-primary">42k+</span>
-            </div>
-            <div className="flex justify-between items-baseline border-b border-outline/10 pb-4">
-              <span className="font-body italic text-on-surface-variant">Terabytes of Data</span>
-              <span className="text-4xl text-primary">856</span>
-            </div>
-          </div>
         </div>
       </section>
     </motion.div>

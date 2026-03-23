@@ -3,6 +3,7 @@ import { MapPin, Calendar, ChevronDown, Search, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useSites } from '../context/SiteContext';
+import TemporalHistogramSlider from '../components/TemporalHistogramSlider';
 
 const Browse = () => {
   const { sites, loading, error, minYear, maxYear } = useSites();
@@ -14,8 +15,8 @@ const Browse = () => {
   const [sortOrder, setSortOrder] = useState<'oldest' | 'latest'>('oldest');
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [selectedCertainty, setSelectedCertainty] = useState<string[]>([]);
-  const [hideUnknownStart, setHideUnknownStart] = useState(false);
-  const [hideUnknownEnd, setHideUnknownEnd] = useState(false);
+  const [excludeUnknownStart, setExcludeUnknownStart] = useState(false);
+  const [excludeUnknownEnd, setExcludeUnknownEnd] = useState(false);
 
   useEffect(() => {
     const q = searchParams.get('q');
@@ -58,8 +59,8 @@ const Browse = () => {
 
     // Temporal Filter (Overlap Logic)
     result = result.filter(site => {
-      if (hideUnknownStart && site.isStartYearUnknown) return false;
-      if (hideUnknownEnd && site.isEndYearUnknown) return false;
+      if (excludeUnknownStart && site.isStartYearUnknown) return false;
+      if (excludeUnknownEnd && site.isEndYearUnknown) return false;
 
       const effectiveStart = startDate === -500 ? -1000000 : startDate;
       const effectiveEnd = endDate === 600 ? 1000000 : endDate;
@@ -109,7 +110,7 @@ const Browse = () => {
     });
 
     return result;
-  }, [sites, searchQuery, sortOrder, startDate, endDate, selectedRegions, selectedCertainty, hideUnknownStart, hideUnknownEnd]);
+  }, [sites, searchQuery, sortOrder, startDate, endDate, selectedRegions, selectedCertainty, excludeUnknownStart, excludeUnknownEnd]);
 
   const toggleRegion = (region: string) => {
     setSelectedRegions(prev => 
@@ -167,60 +168,35 @@ const Browse = () => {
 
         <section className="mb-12">
           <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-6">Temporal Range</h3>
-          <div className="space-y-8">
-            <div className="space-y-3">
-              <div className="flex justify-between font-label text-[10px] uppercase tracking-tighter text-on-surface-variant">
-                <span>Start Date</span>
-                <span className="text-primary font-bold">{formatYear(startDate)}</span>
-              </div>
-              <input 
-                type="range" 
-                min="-500" 
-                max="600" 
-                step="25"
-                value={startDate}
-                onChange={(e) => setStartDate(Math.min(Number(e.target.value), endDate))}
-                className="w-full accent-primary h-1 bg-black/10 rounded-lg appearance-none cursor-pointer" 
-              />
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex justify-between font-label text-[10px] uppercase tracking-tighter text-on-surface-variant">
-                <span>End Date</span>
-                <span className="text-primary font-bold">{formatYear(endDate)}</span>
-              </div>
-              <input 
-                type="range" 
-                min="-500" 
-                max="600" 
-                step="25"
-                value={endDate}
-                onChange={(e) => setEndDate(Math.max(Number(e.target.value), startDate))}
-                className="w-full accent-primary h-1 bg-black/10 rounded-lg appearance-none cursor-pointer" 
-              />
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <label className="flex items-center gap-3 group cursor-pointer py-1">
+          <TemporalHistogramSlider 
+            sites={sites}
+            startDate={startDate}
+            endDate={endDate}
+            onRangeChange={(start, end) => {
+              setStartDate(start);
+              setEndDate(end);
+            }}
+          />
+          <div className="space-y-2 pt-4">
+            <label className="flex items-center gap-3 group cursor-pointer py-1">
                 <input 
                   type="checkbox" 
-                  checked={hideUnknownStart}
-                  onChange={(e) => setHideUnknownStart(e.target.checked)}
+                  checked={excludeUnknownStart}
+                  onChange={(e) => setExcludeUnknownStart(e.target.checked)}
                   className="rounded-none border-outline text-primary focus:ring-primary" 
                 />
-                <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Hide Unknown Start Dates</span>
+                <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Exclude Unknown Start Dates</span>
               </label>
               <label className="flex items-center gap-3 group cursor-pointer py-1">
                 <input 
                   type="checkbox" 
-                  checked={hideUnknownEnd}
-                  onChange={(e) => setHideUnknownEnd(e.target.checked)}
+                  checked={excludeUnknownEnd}
+                  onChange={(e) => setExcludeUnknownEnd(e.target.checked)}
                   className="rounded-none border-outline text-primary focus:ring-primary" 
                 />
-                <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Hide Unknown End Dates</span>
+                <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Exclude Unknown End Dates</span>
               </label>
             </div>
-          </div>
         </section>
 
         <section className="mb-12">

@@ -1,7 +1,8 @@
 import { Site } from '../data/sites';
 
-const GITHUB_API_URL = 'https://api.github.com/repos/8BitSensei/Templum-Data/contents/data/sites?ref=gh-pages';
-const DATES_METADATA_URL = 'https://raw.githubusercontent.com/8BitSensei/Templum-Data/gh-pages/data/metadata/dates.json';
+const GITHUB_API_URL = '/api/github/sites';
+const DATES_METADATA_URL = '/api/github/dates';
+const RAW_CONTENT_PROXY = '/api/github/raw';
 
 export async function fetchSites(): Promise<Site[]> {
   try {
@@ -17,7 +18,8 @@ export async function fetchSites(): Promise<Site[]> {
     const jsonFiles = files.filter((file: any) => file.name.endsWith('.json'));
 
     const sitePromises = jsonFiles.map(async (file: any) => {
-      const siteResponse = await fetch(file.download_url);
+      // Use proxy for raw content
+      const siteResponse = await fetch(`${RAW_CONTENT_PROXY}?url=${encodeURIComponent(file.download_url)}`);
       if (!siteResponse.ok) {
         return null;
       }
@@ -50,7 +52,7 @@ export async function fetchSites(): Promise<Site[]> {
     }));
   } catch (error) {
     console.error('Error fetching sites:', error);
-    return [];
+    throw error;
   }
 }
 
