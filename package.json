@@ -8,6 +8,8 @@
     "build": "vite build",
     "preview": "npm run build && NODE_ENV=production tsx server.ts",
     "preview:vite": "vite preview",
+    "deploy:cloudflare": "npm run build && npx wrangler deploy",
+    "deploy:cloudflare:version": "npm run build && npx wrangler versions upload",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
   },
