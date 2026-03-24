@@ -1,5 +1,5 @@
 import React from 'react';
-import { Copy, Bookmark, Share2, BookOpen, Filter } from 'lucide-react';
+import { Copy, Bookmark, BookOpen, Filter } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useSites } from '../context/SiteContext';
@@ -55,9 +55,6 @@ export const CitationDrawer = () => {
         <button className="text-primary hover:underline font-label text-[10px] uppercase tracking-widest flex items-center gap-2">
           <Copy size={14} />
           Copy Citation
-        </button>
-        <button className="bg-primary text-on-primary h-8 w-8 flex items-center justify-center rounded-sm hover:bg-primary-container transition-colors">
-          <Share2 size={14} />
         </button>
       </div>
     </div>

@@ -4,11 +4,20 @@ const GITHUB_API_URL = '/api/github/sites';
 const DATES_METADATA_URL = '/api/github/dates';
 const RAW_CONTENT_PROXY = '/api/github/raw';
 
+const UNKNOWN_START_YEAR = -1000000;
+const UNKNOWN_END_YEAR = 1000000;
+
 export async function fetchSites(): Promise<Site[]> {
   try {
     // Fetch date mapping first
     const datesResponse = await fetch(DATES_METADATA_URL);
-    const dateMapping = datesResponse.ok ? await datesResponse.json() : {};
+    const rawMapping = datesResponse.ok ? await datesResponse.json() : {};
+    
+    // Normalize mapping keys to lowercase for case-insensitive lookup
+    const dateMapping: Record<string, string> = {};
+    Object.keys(rawMapping).forEach(key => {
+      dateMapping[key.toLowerCase().trim()] = rawMapping[key];
+    });
 
     const response = await fetch(GITHUB_API_URL);
     if (!response.ok) {
@@ -37,18 +46,18 @@ export async function fetchSites(): Promise<Site[]> {
     let maxEnd = -Infinity;
 
     validSites.forEach(site => {
-      if (site.startYear !== 999999) minStart = Math.min(minStart, site.startYear);
-      if (site.endYear !== -999999) maxEnd = Math.max(maxEnd, site.endYear);
+      if (!site.isStartYearUnknown) minStart = Math.min(minStart, site.startYear);
+      if (!site.isEndYearUnknown) maxEnd = Math.max(maxEnd, site.endYear);
     });
 
     // Fallbacks if no dates are known
-    if (minStart === Infinity) minStart = -1000;
-    if (maxEnd === -Infinity) maxEnd = 2000;
+    if (minStart === Infinity) minStart = -150;
+    if (maxEnd === -Infinity) maxEnd = 600;
 
     return validSites.map(site => ({
       ...site,
-      startYear: site.startYear === 999999 ? minStart : site.startYear,
-      endYear: site.endYear === -999999 ? maxEnd : site.endYear
+      startYear: site.isStartYearUnknown ? minStart : site.startYear,
+      endYear: site.isEndYearUnknown ? maxEnd : site.endYear
     }));
   } catch (error) {
     console.error('Error fetching sites:', error);
@@ -88,14 +97,16 @@ function mapStatusToCertainty(status: string): Site['certainty'] {
 }
 
 function parseDate(dateStr: string, mapping: Record<string, string>, isStart: boolean): { year: number, unknown: boolean } {
-  const normalizedStr = dateStr?.toLowerCase().trim();
-  if (!normalizedStr || normalizedStr === 'unknown' || normalizedStr === 'n/a' || normalizedStr === 'not available' || normalizedStr === 'none') {
-    return { year: isStart ? -1000000 : 1000000, unknown: true };
-  }
+  if (!dateStr) return { year: isStart ? UNKNOWN_START_YEAR : UNKNOWN_END_YEAR, unknown: true };
   
-  const str = normalizedStr;
+  // Normalize: lowercase, trim, remove dots
+  const str = dateStr.toLowerCase().trim().replace(/\./g, '');
+  
+  if (!str || str === 'unknown' || str === 'n/a' || str === 'not available' || str === 'none') {
+    return { year: isStart ? UNKNOWN_START_YEAR : UNKNOWN_END_YEAR, unknown: true };
+  }
 
-  // Check mapping first
+  // Check mapping first (case-insensitive lookup)
   if (mapping[str]) {
     return { year: parseInt(mapping[str]), unknown: false };
   }
@@ -106,37 +117,42 @@ function parseDate(dateStr: string, mapping: Record<string, string>, isStart: bo
   }
 
   // Handle BCE
-  if (str.includes('bce')) {
+  if (str.includes('bce') || str.includes('bc')) {
     const match = str.match(/(\d+)/);
     return { year: match ? -parseInt(match[1]) : 0, unknown: false };
   }
 
-  // Handle CE
-  if (str.includes('ce')) {
-    const match = str.match(/(\d+)/);
-    if (match) {
-      const val = parseInt(match[1]);
-      if (str.includes('th')) {
-        // Century
-        let year = (val - 1) * 100;
-        if (str.includes('late')) year += 75;
-        else if (str.includes('mid')) year += 50;
-        else if (str.includes('early')) year += 25;
-        return { year, unknown: false };
+  // Handle CE / AD / Century
+  const isCentury = str.includes('th') || str.includes('st') || str.includes('nd') || str.includes('rd') || str.includes('century') || str.includes('cent');
+  const match = str.match(/(\d+)/);
+  
+  if (match) {
+    const val = parseInt(match[1]);
+    
+    if (isCentury && val < 100) {
+      // Century logic
+      let year = (val - 1) * 100;
+      
+      // Handle post/pre with century
+      if (str.startsWith('post')) {
+        return { year: val * 100, unknown: false };
       }
-      return { year: val, unknown: false };
+      if (str.startsWith('pre')) {
+        return { year: (val - 1) * 100, unknown: false };
+      }
+
+      if (str.includes('late')) year += 75;
+      else if (str.includes('mid')) year += 50;
+      else if (str.includes('early')) year += 25;
+      return { year, unknown: false };
     }
+    
+    // Handle post/pre with year
+    if (str.startsWith('post')) return { year: val, unknown: false };
+    if (str.startsWith('pre')) return { year: val - 1, unknown: false };
+
+    return { year: val, unknown: false };
   }
 
-  // Handle "post" or "pre"
-  if (str.startsWith('post')) {
-    const match = str.match(/(\d+)/);
-    return { year: match ? parseInt(match[1]) : 0, unknown: false };
-  }
-  if (str.startsWith('pre')) {
-    const match = str.match(/(\d+)/);
-    return { year: match ? parseInt(match[1]) - 100 : 0, unknown: false };
-  }
-
-  return { year: isStart ? -1000000 : 1000000, unknown: true };
+  return { year: isStart ? UNKNOWN_START_YEAR : UNKNOWN_END_YEAR, unknown: true };
 }
