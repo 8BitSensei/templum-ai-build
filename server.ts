@@ -2,13 +2,33 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
+import "dotenv/config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+console.log("SERVER SCRIPT LOADED");
+
 async function startServer() {
+  console.log("STARTING SERVER...");
   const app = express();
   const PORT = 3000;
+
+  app.set('trust proxy', 1);
+  app.use(express.json());
+
+  // Health check and diagnostic route
+  app.get("/api/health", (req, res) => {
+    res.json({ 
+      status: "ok", 
+      env: {
+        APP_URL: process.env.APP_URL ? "SET" : "NOT SET",
+      },
+      headers: req.headers,
+      protocol: req.protocol,
+      host: req.get('host')
+    });
+  });
 
   // Proxy for GitHub API to avoid CORS issues
   app.get("/api/github/sites", async (req, res) => {

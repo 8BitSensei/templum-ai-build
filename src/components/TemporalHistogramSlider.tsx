@@ -18,12 +18,22 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
   startDate,
   endDate,
   onRangeChange,
-  minYear = -500,
+  minYear = -150,
   maxYear = 600,
-  step = 25
+  step = 10
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [visualStart, setVisualStart] = useState(startDate);
+  const [visualEnd, setVisualEnd] = useState(endDate);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    if (!isDragging) {
+      setVisualStart(startDate);
+      setVisualEnd(endDate);
+    }
+  }, [startDate, endDate, isDragging]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -74,6 +84,7 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
 
   const handlePanStart = () => {
     panStartValues.current = { start: startDate, end: endDate };
+    setIsDragging(true);
   };
 
   const handleStartPan = (event: any, info: any) => {
@@ -81,11 +92,16 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
     const rect = containerRef.current.getBoundingClientRect();
     const localX = info.point.x - rect.left;
     
-    let newYear = Math.round(xScale.invert(localX) / step) * step;
-    const clampedYear = Math.max(minYear, Math.min(newYear, endDate - step));
+    // Calculate raw year for smooth visual feedback
+    const rawYear = xScale.invert(localX);
+    const clampedRawYear = Math.max(minYear, Math.min(rawYear, endDate - step));
+    setVisualStart(clampedRawYear);
+
+    // Calculate snapped year for data updates
+    const snappedYear = Math.round(clampedRawYear / step) * step;
     
-    if (clampedYear !== startDate) {
-      onRangeChange(clampedYear, endDate);
+    if (snappedYear !== startDate) {
+      onRangeChange(snappedYear, endDate);
     }
   };
 
@@ -94,11 +110,14 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
     const rect = containerRef.current.getBoundingClientRect();
     const localX = info.point.x - rect.left;
     
-    let newYear = Math.round(xScale.invert(localX) / step) * step;
-    const clampedYear = Math.min(maxYear, Math.max(newYear, startDate + step));
+    const rawYear = xScale.invert(localX);
+    const clampedRawYear = Math.min(maxYear, Math.max(rawYear, startDate + step));
+    setVisualEnd(clampedRawYear);
+
+    const snappedYear = Math.round(clampedRawYear / step) * step;
     
-    if (clampedYear !== endDate) {
-      onRangeChange(startDate, clampedYear);
+    if (snappedYear !== endDate) {
+      onRangeChange(startDate, snappedYear);
     }
   };
 
@@ -106,7 +125,7 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
     if (!containerRef.current || !panStartValues.current) return;
     
     const deltaX = info.offset.x;
-    const deltaYear = Math.round((xScale.invert(deltaX) - xScale.invert(0)) / step) * step;
+    const deltaYear = xScale.invert(deltaX) - xScale.invert(0);
     
     const range = panStartValues.current.end - panStartValues.current.start;
     let newStart = panStartValues.current.start + deltaYear;
@@ -120,8 +139,14 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
       newStart = maxYear - range;
     }
 
-    if (newStart !== startDate || newEnd !== endDate) {
-      onRangeChange(newStart, newEnd);
+    setVisualStart(newStart);
+    setVisualEnd(newEnd);
+
+    const snappedStart = Math.round(newStart / step) * step;
+    const snappedEnd = snappedStart + range;
+
+    if (snappedStart !== startDate || snappedEnd !== endDate) {
+      onRangeChange(snappedStart, snappedEnd);
     }
   };
 
@@ -160,13 +185,14 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
             <motion.div
               className="absolute bottom-4 h-1 bg-primary cursor-grab active:cursor-grabbing group"
               style={{
-                left: xScale(startDate),
-                width: Math.max(0, xScale(endDate) - xScale(startDate))
+                left: xScale(visualStart),
+                width: Math.max(0, xScale(visualEnd) - xScale(visualStart))
               }}
               onPanStart={handlePanStart}
               onPan={handleWindowPan}
               onPanEnd={() => {
                 panStartValues.current = null;
+                setIsDragging(false);
               }}
             >
               {/* Visual indicator for draggable area */}
@@ -176,24 +202,26 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
             {/* Handles */}
             <motion.div
               className="absolute bottom-[10px] w-3 h-3 bg-white border-2 border-primary rounded-full shadow-sm cursor-ew-resize z-30"
-              style={{ left: xScale(startDate) - 6 }}
+              style={{ left: xScale(visualStart) - 6 }}
               whileHover={{ scale: 1.3 }}
               whileTap={{ scale: 0.9 }}
               onPanStart={handlePanStart}
               onPan={handleStartPan}
               onPanEnd={() => {
                 panStartValues.current = null;
+                setIsDragging(false);
               }}
             />
             <motion.div
               className="absolute bottom-[10px] w-3 h-3 bg-white border-2 border-primary rounded-full shadow-sm cursor-ew-resize z-30"
-              style={{ left: xScale(endDate) - 6 }}
+              style={{ left: xScale(visualEnd) - 6 }}
               whileHover={{ scale: 1.3 }}
               whileTap={{ scale: 0.9 }}
               onPanStart={handlePanStart}
               onPan={handleEndPan}
               onPanEnd={() => {
                 panStartValues.current = null;
+                setIsDragging(false);
               }}
             />
           </>

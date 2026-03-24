@@ -126,9 +126,9 @@ const Home = () => {
       </section>
 
       {/* Featured Sites */}
-      <section className="px-8 py-24 bg-surface-container-low">
+      <section className="px-8 py-16 bg-surface-container-low">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-12">
+          <div className="flex justify-between items-end mb-10">
             <div>
               <span className="font-label text-[12px] text-outline uppercase tracking-[0.2em] block mb-2">Latest Additions</span>
               <h2 className="text-4xl text-primary">Recently Added Sites</h2>
@@ -146,8 +146,8 @@ const Home = () => {
           ) : featuredSites.length > 0 ? (
             <div className="grid grid-cols-12 gap-8">
               {/* Large Feature Card */}
-              <div className="col-span-12 md:col-span-8 group cursor-pointer relative overflow-hidden h-[500px] bg-surface-container-high border border-black/5">
-                <Link to={`/sites/${featuredSites[0].id}`} className="block h-full p-12 flex flex-col justify-end">
+              <div className="col-span-12 md:col-span-8 group cursor-pointer relative overflow-hidden h-[420px] bg-surface-container-high border border-black/5">
+                <Link to={`/sites/${featuredSites[0].id}`} className="block h-full p-10 flex flex-col justify-center">
                   <div className="relative z-10">
                     <div className="bg-secondary-container inline-block px-3 py-1 mb-4">
                       <span className="font-label text-[10px] text-on-secondary-container uppercase tracking-widest">LATEST ADDITION</span>

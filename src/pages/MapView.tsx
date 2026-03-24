@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MapPin, Layers, Search, Settings, HelpCircle, FolderArchive, ChevronUp, Calendar, X, ExternalLink, Loader2 } from 'lucide-react';
+import { MapPin, Layers, Search, Settings, HelpCircle, FolderArchive, ChevronUp, Calendar, X, ExternalLink, Loader2, Filter } from 'lucide-react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, LayersControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -74,7 +74,7 @@ const MapView = () => {
   const { sites, loading, error, minYear, maxYear } = useSites();
   const [searchParams] = useSearchParams();
   
-  const [startDate, setStartDate] = useState(-500);
+  const [startDate, setStartDate] = useState(-150);
   const [endDate, setEndDate] = useState(600);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
@@ -82,6 +82,13 @@ const MapView = () => {
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [excludeUnknownStart, setExcludeUnknownStart] = useState(false);
   const [excludeUnknownEnd, setExcludeUnknownEnd] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  useEffect(() => {
+    const handleToggle = () => setIsSidebarOpen(true);
+    window.addEventListener('toggle-browse-filters', handleToggle);
+    return () => window.removeEventListener('toggle-browse-filters', handleToggle);
+  }, []);
 
   useEffect(() => {
     const q = searchParams.get('q');
@@ -93,7 +100,7 @@ const MapView = () => {
     
     if (period) {
       if (period.includes('Iron Age')) {
-        setStartDate(-500);
+        setStartDate(-150);
         setEndDate(43);
       } else if (period.includes('Roman')) {
         setStartDate(43);
@@ -114,7 +121,7 @@ const MapView = () => {
   }, [searchParams]);
 
   const formatYear = (year: number) => {
-    if (year === -500) return 'pre 500 BCE';
+    if (year === -150) return 'pre 150 BCE';
     if (year === 600) return 'post 600 CE';
     return year < 0 ? `${Math.abs(year)} BCE` : `${year} CE`;
   };
@@ -143,7 +150,7 @@ const MapView = () => {
       if (excludeUnknownStart && site.isStartYearUnknown) return false;
       if (excludeUnknownEnd && site.isEndYearUnknown) return false;
 
-      const effectiveStart = startDate === -500 ? -1000000 : startDate;
+      const effectiveStart = startDate === -150 ? -1000000 : startDate;
       const effectiveEnd = endDate === 600 ? 1000000 : endDate;
 
       return site.startYear <= effectiveEnd && site.endYear >= effectiveStart;
@@ -189,95 +196,84 @@ const MapView = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex h-[calc(100vh-64px)] overflow-hidden"
+      className="flex h-[calc(100vh-64px)] overflow-hidden relative"
     >
-      {/* Sidebar Filters */}
-      <aside className="w-72 flex-shrink-0 bg-surface-container-low overflow-y-auto px-6 py-8 border-r border-black/5 z-40">
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence mode="wait">
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Slide-out Sidebar */}
+      <AnimatePresence mode="wait">
+        {isSidebarOpen && (
+          <motion.aside
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-y-0 left-0 w-80 bg-surface-container-low z-[101] shadow-2xl lg:hidden overflow-y-auto px-6 py-8"
+          >
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl text-primary italic">Filter Archive</h2>
+              <button 
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-2 hover:bg-surface-container-high rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <SidebarContent 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              sites={sites}
+              startDate={startDate}
+              endDate={endDate}
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+              excludeUnknownStart={excludeUnknownStart}
+              setExcludeUnknownStart={setExcludeUnknownStart}
+              excludeUnknownEnd={excludeUnknownEnd}
+              setExcludeUnknownEnd={setExcludeUnknownEnd}
+              selectedRegions={selectedRegions}
+              toggleRegion={toggleRegion}
+              selectedCertainty={selectedCertainty}
+              toggleCertainty={toggleCertainty}
+            />
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Sidebar Filters */}
+      <aside className="hidden lg:block w-72 flex-shrink-0 bg-surface-container-low overflow-y-auto px-6 py-8 border-r border-black/5 z-40">
         <header className="mb-10">
           <h2 className="text-2xl text-primary mb-2">Filter Archive</h2>
-          <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Systemic Tags</p>
         </header>
 
-        <section className="mb-12">
-          <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Keyword Search</h3>
-          <div className="relative">
-            <input 
-              type="text" 
-              placeholder="Search sites, locations, or descriptions..."
-              className="w-full bg-surface-container-high border border-outline/20 px-4 py-2 font-body text-sm focus:outline-none focus:border-primary transition-colors pr-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Search className="absolute right-3 top-2.5 text-on-surface-variant/50" size={16} />
-          </div>
-        </section>
-
-        <section className="mb-12">
-          <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-6">Temporal Range</h3>
-          <TemporalHistogramSlider 
-            sites={sites}
-            startDate={startDate}
-            endDate={endDate}
-            onRangeChange={(start, end) => {
-              setStartDate(start);
-              setEndDate(end);
-            }}
-          />
-          <div className="space-y-2 pt-4">
-            <label className="flex items-center gap-3 group cursor-pointer py-1">
-                <input 
-                  type="checkbox" 
-                  checked={excludeUnknownStart}
-                  onChange={(e) => setExcludeUnknownStart(e.target.checked)}
-                  className="rounded-none border-outline text-primary focus:ring-primary" 
-                />
-                <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Exclude Unknown Start Dates</span>
-              </label>
-              <label className="flex items-center gap-3 group cursor-pointer py-1">
-                <input 
-                  type="checkbox" 
-                  checked={excludeUnknownEnd}
-                  onChange={(e) => setExcludeUnknownEnd(e.target.checked)}
-                  className="rounded-none border-outline text-primary focus:ring-primary" 
-                />
-                <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Exclude Unknown End Dates</span>
-              </label>
-            </div>
-        </section>
-
-        <section className="mb-12">
-          <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Geographic Focus</h3>
-          <div className="space-y-2">
-            {['England', 'Wales', 'Scotland', 'Ireland'].map(region => (
-              <label key={region} className="flex items-center gap-3 group cursor-pointer py-1">
-                <input 
-                  type="checkbox" 
-                  checked={selectedRegions.includes(region)}
-                  onChange={() => toggleRegion(region)}
-                  className="rounded-none border-outline text-primary focus:ring-primary" 
-                />
-                <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">{region}</span>
-              </label>
-            ))}
-          </div>
-        </section>
-
-        <section className="mb-12">
-          <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Certainty</h3>
-          <div className="space-y-2">
-            {['Certain', 'Probable', 'Possible', 'Unlikely'].map(certainty => (
-              <label key={certainty} className="flex items-center gap-3 group cursor-pointer py-1">
-                <input 
-                  type="checkbox" 
-                  checked={selectedCertainty.includes(certainty)}
-                  onChange={() => toggleCertainty(certainty)}
-                  className="rounded-none border-outline text-primary focus:ring-primary" 
-                />
-                <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">{certainty}</span>
-              </label>
-            ))}
-          </div>
-        </section>
+        <SidebarContent 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          sites={sites}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+          excludeUnknownStart={excludeUnknownStart}
+          setExcludeUnknownStart={setExcludeUnknownStart}
+          excludeUnknownEnd={excludeUnknownEnd}
+          setExcludeUnknownEnd={setExcludeUnknownEnd}
+          selectedRegions={selectedRegions}
+          toggleRegion={toggleRegion}
+          selectedCertainty={selectedCertainty}
+          toggleCertainty={toggleCertainty}
+        />
       </aside>
 
       {/* Main Map Area */}
@@ -415,18 +411,18 @@ const MapView = () => {
       </main>
 
       {/* Footer Bar */}
-      <footer className="fixed bottom-0 left-72 right-0 h-12 bg-surface-container/90 backdrop-blur-md z-40 flex items-center px-8 border-t border-black/5">
-        <div className="flex items-center gap-8 w-full">
-          <div className="flex items-center gap-2">
+      <footer className="fixed bottom-0 left-0 lg:left-72 right-0 h-12 bg-surface-container/90 backdrop-blur-md z-40 flex items-center px-4 lg:px-8 border-t border-black/5">
+        <div className="flex items-center gap-4 lg:gap-8 w-full overflow-x-auto no-scrollbar">
+          <div className="flex-shrink-0 flex items-center gap-2">
             <FolderArchive className="text-primary" size={16} />
-            <span className="font-label text-[9px] uppercase tracking-widest font-bold">Research Bundle: (04)</span>
+            <span className="font-label text-[9px] uppercase tracking-widest font-bold whitespace-nowrap">Research Bundle: (04)</span>
           </div>
-          <div className="flex items-center gap-6">
-            <span className="font-label text-[9px] uppercase text-on-surface-variant">Heracleion_Summary.pdf</span>
-            <span className="font-label text-[9px] uppercase text-on-surface-variant">Thonis_Coordinates.csv</span>
+          <div className="hidden sm:flex items-center gap-6 overflow-hidden">
+            <span className="font-label text-[9px] uppercase text-on-surface-variant whitespace-nowrap">Heracleion_Summary.pdf</span>
+            <span className="font-label text-[9px] uppercase text-on-surface-variant whitespace-nowrap">Thonis_Coordinates.csv</span>
           </div>
-          <button className="ml-auto flex items-center gap-2 group">
-            <span className="font-label text-[9px] uppercase font-bold tracking-widest group-hover:text-primary">Open Archive Drawer</span>
+          <button className="ml-auto flex-shrink-0 flex items-center gap-2 group">
+            <span className="font-label text-[9px] uppercase font-bold tracking-widest group-hover:text-primary whitespace-nowrap">Open Archive Drawer</span>
             <ChevronUp size={14} />
           </button>
         </div>
@@ -434,5 +430,106 @@ const MapView = () => {
     </motion.div>
   );
 };
+
+const SidebarContent = ({ 
+  searchQuery, 
+  setSearchQuery, 
+  sites, 
+  startDate, 
+  endDate, 
+  setStartDate, 
+  setEndDate, 
+  excludeUnknownStart, 
+  setExcludeUnknownStart, 
+  excludeUnknownEnd, 
+  setExcludeUnknownEnd, 
+  selectedRegions, 
+  toggleRegion, 
+  selectedCertainty, 
+  toggleCertainty 
+}: any) => (
+  <>
+    <section className="mb-12">
+      <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Keyword Search</h3>
+      <div className="relative">
+        <input 
+          type="text" 
+          placeholder="Search sites, locations, or descriptions..."
+          className="w-full bg-surface-container-high border border-outline/20 px-4 py-2 font-body text-sm focus:outline-none focus:border-primary transition-colors pr-10"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Search className="absolute right-3 top-2.5 text-on-surface-variant/50" size={16} />
+      </div>
+    </section>
+
+    <section className="mb-12">
+      <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-6">Temporal Range</h3>
+      <TemporalHistogramSlider 
+        sites={sites}
+        startDate={startDate}
+        endDate={endDate}
+        onRangeChange={(start, end) => {
+          setStartDate(start);
+          setEndDate(end);
+        }}
+      />
+      <div className="space-y-2 pt-4">
+        <label className="flex items-center gap-3 group cursor-pointer py-1">
+          <input 
+            type="checkbox" 
+            checked={excludeUnknownStart}
+            onChange={(e) => setExcludeUnknownStart(e.target.checked)}
+            className="rounded-none border-outline text-primary focus:ring-primary" 
+          />
+          <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Exclude Unknown Start Dates</span>
+        </label>
+        <label className="flex items-center gap-3 group cursor-pointer py-1">
+          <input 
+            type="checkbox" 
+            checked={excludeUnknownEnd}
+            onChange={(e) => setExcludeUnknownEnd(e.target.checked)}
+            className="rounded-none border-outline text-primary focus:ring-primary" 
+          />
+          <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Exclude Unknown End Dates</span>
+        </label>
+      </div>
+    </section>
+
+    <section className="mb-12">
+      <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Geographic Focus</h3>
+      <div className="space-y-2">
+        {['England', 'Wales', 'Scotland', 'Ireland'].map(region => (
+          <label key={region} className="flex items-center gap-3 group cursor-pointer py-1">
+            <input 
+              type="checkbox" 
+              checked={selectedRegions.includes(region)}
+              onChange={() => toggleRegion(region)}
+              className="rounded-none border-outline text-primary focus:ring-primary" 
+            />
+            <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">{region}</span>
+          </label>
+        ))}
+      </div>
+    </section>
+
+    <section className="mb-12">
+      <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Certainty</h3>
+      <div className="space-y-2">
+        {['Certain', 'Probable', 'Possible', 'Unlikely'].map(certainty => (
+          <label key={certainty} className="flex items-center gap-3 group cursor-pointer py-1">
+            <input 
+              type="checkbox" 
+              checked={selectedCertainty.includes(certainty)}
+              onChange={() => toggleCertainty(certainty)}
+              className="rounded-none border-outline text-primary focus:ring-primary" 
+            />
+            <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">{certainty}</span>
+          </label>
+        ))}
+      </div>
+    </section>
+  </>
+);
 
 export default MapView;

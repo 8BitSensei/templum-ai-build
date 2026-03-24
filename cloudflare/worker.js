@@ -69,11 +69,11 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === '/api/github/sites') {
-      return proxyJson(GITHUB_SITES_URL);
+      return proxyJson('https://api.github.com/repos/8BitSensei/Templum-Data/contents/data/sites?ref=gh-pages');
     }
 
     if (url.pathname === '/api/github/dates') {
-      return proxyJson(GITHUB_DATES_URL);
+      return proxyJson('https://raw.githubusercontent.com/8BitSensei/Templum-Data/gh-pages/data/metadata/dates.json');
     }
 
     if (url.pathname === '/api/github/raw') {

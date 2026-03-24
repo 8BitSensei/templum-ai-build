@@ -15,24 +15,24 @@ export default function App() {
   return (
     <SiteProvider>
       <Router>
-        <div className="min-h-screen flex flex-col bg-surface">
-          <TopAppBar />
-          <main className="flex-grow pt-16">
-            <AnimatePresence mode="wait">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/browse" element={<Browse />} />
-                <Route path="/sites" element={<Browse />} />
-                <Route path="/sites/:id" element={<SiteDetail />} />
-                <Route path="/map" element={<MapView />} />
-                <Route path="/about" element={<About />} />
-              </Routes>
-            </AnimatePresence>
-          </main>
-          <Footer />
-          <CitationDrawer />
-        </div>
-      </Router>
-    </SiteProvider>
+          <div className="min-h-screen flex flex-col bg-surface">
+            <TopAppBar />
+            <main className="flex-grow pt-16">
+              <AnimatePresence mode="wait">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/browse" element={<Browse />} />
+                  <Route path="/sites" element={<Browse />} />
+                  <Route path="/sites/:id" element={<SiteDetail />} />
+                  <Route path="/map" element={<MapView />} />
+                  <Route path="/about" element={<About />} />
+                </Routes>
+              </AnimatePresence>
+            </main>
+            <Footer />
+            <CitationDrawer />
+          </div>
+        </Router>
+      </SiteProvider>
   );
 }
