@@ -23,6 +23,18 @@ export const CitationDrawer = () => {
     ? `C. Rolph-Kevlahan, ${site.name}, "Templum." templum.wiki. https://templum.wiki/sites/${site.id} (accessed ${formattedDate}).`
     : `C. Rolph-Kevlahan, "Templum." templum.wiki. https://templum.wiki/ (accessed ${formattedDate}).`;
 
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(citation);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container/80 backdrop-blur-lg border-t border-primary/10 px-8 py-3 flex items-center justify-between shadow-lg">
       {/* Mobile Filter Toggle FAB - Anchored to banner top */}
@@ -52,9 +64,12 @@ export const CitationDrawer = () => {
       </div>
       
       <div className="flex items-center gap-4">
-        <button className="text-primary hover:underline font-label text-[10px] uppercase tracking-widest flex items-center gap-2">
-          <Copy size={14} />
-          Copy Citation
+        <button 
+          onClick={handleCopy}
+          className="text-primary hover:underline font-label text-[10px] uppercase tracking-widest flex items-center gap-2 transition-colors duration-200"
+        >
+          <Copy size={14} className={copied ? "text-green-500" : ""} />
+          {copied ? "Copied!" : "Copy Citation"}
         </button>
       </div>
     </div>

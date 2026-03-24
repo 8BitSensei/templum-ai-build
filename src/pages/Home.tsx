@@ -80,7 +80,7 @@ const Home = () => {
                     className="bg-transparent border-none p-0 font-label text-sm text-primary focus:ring-0 cursor-pointer outline-none"
                   >
                     <option>All Eras</option>
-                    <option>Iron Age (500 BCE - 43 CE)</option>
+                    <option>Iron Age (150 BCE - 43 CE)</option>
                     <option>Roman (43 CE - 410 CE)</option>
                     <option>Early Medieval (410 CE - 600 CE)</option>
                   </select>

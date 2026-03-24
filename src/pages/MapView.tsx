@@ -451,15 +451,25 @@ const SidebarContent = ({
   <>
     <section className="mb-12">
       <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Keyword Search</h3>
-      <div className="relative">
-        <input 
-          type="text" 
-          placeholder="Search sites, locations, or descriptions..."
-          className="w-full bg-surface-container-high border border-outline/20 px-4 py-2 font-body text-sm focus:outline-none focus:border-primary transition-colors pr-10"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <Search className="absolute right-3 top-2.5 text-on-surface-variant/50" size={16} />
+      <div className="space-y-3">
+        <div className="relative">
+          <input 
+            type="text" 
+            placeholder="Search sites, locations, or descriptions..."
+            className="w-full bg-surface-container-high border border-outline/20 px-4 py-2.5 font-body text-sm focus:outline-none focus:border-primary transition-colors"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="flex justify-end">
+          <button 
+            className="bg-primary text-on-primary px-6 py-2 flex items-center gap-2 hover:bg-primary/90 transition-all active:scale-95 shadow-sm font-label text-[10px] uppercase tracking-widest font-bold"
+            aria-label="Search"
+          >
+            <Search size={14} />
+            Run Query
+          </button>
+        </div>
       </div>
     </section>
 
