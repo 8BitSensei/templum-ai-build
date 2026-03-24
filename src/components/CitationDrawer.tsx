@@ -1,14 +1,36 @@
 import React from 'react';
 import { Copy, Bookmark, Share2, BookOpen } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { useSites } from '../context/SiteContext';
 
 export const CitationDrawer = () => {
+  const location = useLocation();
+  const { sites } = useSites();
+  
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yy = today.getFullYear().toString().slice(-2);
+  const formattedDate = `${dd}/${mm}/${yy}`;
+
+  // Check if we are on a site detail page
+  const siteMatch = location.pathname.match(/^\/sites\/([^/]+)/);
+  const siteId = siteMatch ? siteMatch[1] : null;
+  const site = siteId ? sites.find(s => s.id === siteId) : null;
+
+  const citation = site 
+    ? `C. Rolph-Kevlahan, ${site.name}, "Templum." templum.wiki. https://templum.wiki/sites/${site.id} (accessed ${formattedDate}).`
+    : `C. Rolph-Kevlahan, "Templum." templum.wiki. https://templum.wiki/ (accessed ${formattedDate}).`;
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container/80 backdrop-blur-lg border-t border-primary/10 px-8 py-3 flex items-center justify-between shadow-lg">
       <div className="flex items-center gap-4">
         <BookOpen className="text-primary" size={18} />
         <div className="flex flex-col">
           <span className="font-label text-[10px] uppercase font-bold text-primary leading-none">Reference Archive</span>
-          <span className="font-body text-xs italic text-on-surface-variant">Cite this page: Thorne, J. et al. (2024) Project Methodology.</span>
+          <span className="font-body text-xs italic text-on-surface-variant">
+            Cite this page: {citation}
+          </span>
         </div>
       </div>
       

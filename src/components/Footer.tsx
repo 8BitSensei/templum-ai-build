@@ -3,30 +3,45 @@ import { Link } from 'react-router-dom';
 
 export const Footer = () => {
   return (
-    <footer className="w-full bg-primary text-surface py-16 px-12 mt-auto">
+    <footer className="w-full bg-primary text-surface pt-8 pb-24 px-12 mt-auto">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
         <div className="mb-8 md:mb-0">
           <div className="font-headline text-xl italic mb-2">Templum</div>
           <p className="font-label text-[10px] tracking-widest opacity-60 uppercase">
-            © 2024 Archaeological Research Project. All rights reserved. Scholarly Digital Archive.
+            © 2026 Templum. MIT License.
           </p>
         </div>
         
         <div className="flex flex-wrap justify-center gap-10">
           <div className="flex flex-col gap-3">
             <span className="font-label text-[10px] text-secondary-container uppercase tracking-widest">Research</span>
-            <Link to="#" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity underline decoration-1 underline-offset-4">Methodology</Link>
-            <Link to="#" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity">Citations</Link>
+            <Link to="/about#scope" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity">Scope</Link>
+            <a 
+              href="/api/github/sites" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              Raw Data
+            </a>
           </div>
+
           <div className="flex flex-col gap-3">
-            <span className="font-label text-[10px] text-secondary-container uppercase tracking-widest">Legal</span>
-            <Link to="#" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity">Privacy Policy</Link>
-            <Link to="#" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity">Ethics Code</Link>
+            <span className="font-label text-[10px] text-secondary-container uppercase tracking-widest">Source</span>
+            <a 
+              href="https://github.com/8BitSensei/Templum-Data" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity"
+            >
+              GitHub
+            </a>
           </div>
+
           <div className="flex flex-col gap-3">
             <span className="font-label text-[10px] text-secondary-container uppercase tracking-widest">Connect</span>
-            <Link to="#" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity">Contact Team</Link>
-            <Link to="#" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity">Data Requests</Link>
+            <Link to="/about#contact" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity">Contact Team</Link>
+            <Link to="/about#social" className="font-body text-sm opacity-80 hover:opacity-100 transition-opacity">Social Media</Link>
           </div>
         </div>
       </div>
