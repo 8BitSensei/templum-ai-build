@@ -13,12 +13,16 @@ const Browse = () => {
   const [startDate, setStartDate] = useState(-150);
   const [endDate, setEndDate] = useState(600);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState<'oldest' | 'latest'>('oldest');
+  const [sortOrder, setSortOrder] = useState<'oldest' | 'latest' | 'certainty-desc' | 'certainty-asc' | 'alpha'>('certainty-desc');
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [selectedCertainty, setSelectedCertainty] = useState<string[]>([]);
   const [excludeUnknownStart, setExcludeUnknownStart] = useState(false);
   const [excludeUnknownEnd, setExcludeUnknownEnd] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    document.title = "🏛️ Browse | Templum";
+  }, []);
 
   useEffect(() => {
     const handleToggle = () => setIsSidebarOpen(true);
@@ -108,13 +112,27 @@ const Browse = () => {
         .filter(site => (site as any).matchCount > 0);
     }
 
-    // Temporal Sorting Logic
+    // Sorting Logic
+    const certaintyOrder: Record<string, number> = {
+      'Certain': 4,
+      'Probable': 3,
+      'Possible': 2,
+      'Unlikely': 1
+    };
+
     result.sort((a, b) => {
       if (sortOrder === 'oldest') {
         return a.startYear - b.startYear;
-      } else {
+      } else if (sortOrder === 'latest') {
         return b.startYear - a.startYear;
+      } else if (sortOrder === 'certainty-desc') {
+        return certaintyOrder[b.certainty] - certaintyOrder[a.certainty];
+      } else if (sortOrder === 'certainty-asc') {
+        return certaintyOrder[a.certainty] - certaintyOrder[b.certainty];
+      } else if (sortOrder === 'alpha') {
+        return a.name.localeCompare(b.name);
       }
+      return 0;
     });
 
     return result;
@@ -154,7 +172,7 @@ const Browse = () => {
       className="flex h-[calc(100vh-64px)] overflow-hidden relative"
     >
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-72 flex-shrink-0 bg-surface-container-low overflow-y-auto px-6 py-8 border-r border-black/5">
+      <aside className="hidden lg:block w-72 flex-shrink-0 bg-surface-container-low overflow-y-auto px-6 pt-8 pb-24 border-r border-black/5">
         <SidebarContent 
           setIsSidebarOpen={setIsSidebarOpen}
           searchQuery={searchQuery}
@@ -196,7 +214,7 @@ const Browse = () => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 left-0 w-80 bg-surface-container-low z-[101] shadow-2xl lg:hidden overflow-y-auto px-6 py-8 border-r border-black/5"
+            className="fixed inset-y-0 left-0 w-80 bg-surface-container-low z-[101] shadow-2xl lg:hidden overflow-y-auto px-6 pt-8 pb-24 border-r border-black/5"
           >
             <SidebarContent 
               setIsSidebarOpen={setIsSidebarOpen}
@@ -235,11 +253,14 @@ const Browse = () => {
             <div className="relative group w-full md:w-auto">
               <select 
                 value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value as 'oldest' | 'latest')}
+                onChange={(e) => setSortOrder(e.target.value as any)}
                 className="appearance-none bg-transparent pr-8 font-label text-[10px] uppercase text-on-surface-variant cursor-pointer hover:text-primary focus:outline-none w-full md:w-auto"
               >
+                <option value="certainty-desc">Sort Most Certain to Least</option>
+                <option value="certainty-asc">Sort Least Certain to Most</option>
                 <option value="oldest">Sort Oldest to Latest</option>
                 <option value="latest">Sort Latest to Oldest</option>
+                <option value="alpha">Sort Alphabetically</option>
               </select>
               <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant" size={14} />
             </div>
@@ -317,7 +338,7 @@ const SidebarContent = ({
   selectedCertainty, 
   toggleCertainty 
 }: any) => (
-  <div className="flex flex-col h-full">
+  <div className="flex flex-col">
     <header className="mb-10 flex justify-between items-start">
       <div>
         <h2 className="text-2xl text-primary mb-2">Filter Archive</h2>
@@ -342,20 +363,11 @@ const SidebarContent = ({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex justify-end">
-          <button 
-            className="bg-primary text-on-primary px-6 py-2 flex items-center gap-2 hover:bg-primary/90 transition-all active:scale-95 shadow-sm font-label text-[10px] uppercase tracking-widest font-bold"
-            aria-label="Search"
-          >
-            <Search size={14} />
-            Run Query
-          </button>
-        </div>
       </div>
     </section>
 
     <section className="mb-12">
-      <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-6">Temporal Range</h3>
+      <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-3">Temporal Range</h3>
       <TemporalHistogramSlider 
         sites={sites}
         startDate={startDate}
@@ -365,8 +377,8 @@ const SidebarContent = ({
           setEndDate(end);
         }}
       />
-      <div className="space-y-2 pt-4">
-        <label className="flex items-center gap-3 group cursor-pointer py-1">
+      <div className="space-y-1 pt-2">
+        <label className="flex items-center gap-3 group cursor-pointer py-0.5">
           <input 
             type="checkbox" 
             checked={excludeUnknownStart}
@@ -375,7 +387,7 @@ const SidebarContent = ({
           />
           <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Exclude Unknown Start Dates</span>
         </label>
-        <label className="flex items-center gap-3 group cursor-pointer py-1">
+        <label className="flex items-center gap-3 group cursor-pointer py-0.5">
           <input 
             type="checkbox" 
             checked={excludeUnknownEnd}
@@ -389,9 +401,9 @@ const SidebarContent = ({
 
     <section className="mb-12">
       <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Geographic Focus</h3>
-      <div className="space-y-2">
+      <div className="space-y-1">
         {['England', 'Wales', 'Scotland', 'Ireland'].map(region => (
-          <label key={region} className="flex items-center gap-3 group cursor-pointer py-1">
+          <label key={region} className="flex items-center gap-3 group cursor-pointer py-0.5">
             <input 
               type="checkbox" 
               checked={selectedRegions.includes(region)}
@@ -406,9 +418,9 @@ const SidebarContent = ({
 
     <section className="mb-12">
       <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Certainty</h3>
-      <div className="space-y-2">
+      <div className="space-y-1">
         {['Certain', 'Probable', 'Possible', 'Unlikely'].map(certainty => (
-          <label key={certainty} className="flex items-center gap-3 group cursor-pointer py-1">
+          <label key={certainty} className="flex items-center gap-3 group cursor-pointer py-0.5">
             <input 
               type="checkbox" 
               checked={selectedCertainty.includes(certainty)}

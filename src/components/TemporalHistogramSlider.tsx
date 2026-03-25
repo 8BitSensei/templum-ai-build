@@ -157,8 +157,8 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
   };
 
   return (
-    <div className="w-full space-y-6 py-2" ref={containerRef}>
-      <div className="relative h-20 w-full select-none">
+    <div className="w-full space-y-3" ref={containerRef}>
+      <div className="relative h-16 w-full select-none">
         {containerWidth > 0 && (
           <>
             {/* Histogram Bars */}

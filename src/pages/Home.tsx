@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, ArrowRight, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,6 +11,10 @@ const Home = () => {
   const [period, setPeriod] = useState('All Eras');
   const [region, setRegion] = useState('All Regions');
   const [certainty, setCertainty] = useState('All Certainty');
+
+  useEffect(() => {
+    document.title = "🏛️ Home | Templum";
+  }, []);
 
   const featuredSites = useMemo(() => {
     // Show the three latest sites added to the dataset

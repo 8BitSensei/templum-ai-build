@@ -7,6 +7,10 @@ const About = () => {
   const { hash } = useLocation();
 
   useEffect(() => {
+    document.title = "🏛️ About | Templum";
+  }, []);
+
+  useEffect(() => {
     if (hash) {
       const element = document.getElementById(hash.replace('#', ''));
       if (element) {
@@ -111,32 +115,23 @@ const About = () => {
           <div>
             <span className="font-label text-[12px] tracking-[0.2em] text-on-surface-variant uppercase mb-4 block">Contact</span>
             <h2 className="text-5xl md:text-7xl text-primary leading-tight mb-8">Get in <br/><span className="italic text-primary-container">Touch.</span></h2>
-            <p className="text-on-surface-variant text-lg leading-relaxed font-body mb-10">
-              For scholarly inquiries, data access requests, or collaboration proposals regarding the Templum initiative, please reach out directly.
-            </p>
           </div>
           
           <div className="bg-surface-container-high p-12 shadow-sm border-l-4 border-primary">
             <div className="space-y-8">
               <div>
-                <span className="font-label text-[10px] uppercase tracking-widest text-primary font-bold block mb-2">Author & Lead Researcher</span>
-                <h3 className="text-3xl text-on-surface">C. Rolph-Kevlahan</h3>
+                <span className="font-label text-[10px] uppercase tracking-widest text-primary font-bold block mb-2">Author & Developer</span>
+                <h3 className="text-3xl text-on-surface">Charlie Rolph-Kevlahan</h3>
               </div>
               
               <div>
                 <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant block mb-2">Email Address</span>
                 <a 
-                  href="mailto:ctkevlahan@gmail.com" 
+                  href="mailto:templum.data@gmail.com" 
                   className="text-2xl text-primary hover:underline transition-all font-body break-all"
                 >
-                  ctkevlahan@gmail.com
+                  templum.data@gmail.com
                 </a>
-              </div>
-
-              <div className="pt-6 border-t border-black/5">
-                <p className="text-sm text-on-surface-variant font-body leading-relaxed">
-                  Responses are typically provided within 48 hours for academic correspondence.
-                </p>
               </div>
             </div>
           </div>

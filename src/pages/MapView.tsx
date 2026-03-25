@@ -85,6 +85,10 @@ const MapView = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   useEffect(() => {
+    document.title = "🏛️ Map | Templum";
+  }, []);
+
+  useEffect(() => {
     const handleToggle = () => setIsSidebarOpen(true);
     window.addEventListener('toggle-browse-filters', handleToggle);
     return () => window.removeEventListener('toggle-browse-filters', handleToggle);
@@ -219,7 +223,7 @@ const MapView = () => {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 left-0 w-80 bg-surface-container-low z-[101] shadow-2xl lg:hidden overflow-y-auto px-6 py-8"
+            className="fixed inset-y-0 left-0 w-80 bg-surface-container-low z-[101] shadow-2xl lg:hidden overflow-y-auto px-6 pt-8 pb-24"
           >
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-2xl text-primary italic">Filter Archive</h2>
@@ -252,7 +256,7 @@ const MapView = () => {
       </AnimatePresence>
 
       {/* Desktop Sidebar Filters */}
-      <aside className="hidden lg:block w-72 flex-shrink-0 bg-surface-container-low overflow-y-auto px-6 py-8 border-r border-black/5 z-40">
+      <aside className="hidden lg:block w-72 flex-shrink-0 bg-surface-container-low overflow-y-auto px-6 pt-8 pb-24 border-r border-black/5 z-40">
         <header className="mb-10">
           <h2 className="text-2xl text-primary mb-2">Filter Archive</h2>
         </header>
@@ -461,20 +465,11 @@ const SidebarContent = ({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex justify-end">
-          <button 
-            className="bg-primary text-on-primary px-6 py-2 flex items-center gap-2 hover:bg-primary/90 transition-all active:scale-95 shadow-sm font-label text-[10px] uppercase tracking-widest font-bold"
-            aria-label="Search"
-          >
-            <Search size={14} />
-            Run Query
-          </button>
-        </div>
       </div>
     </section>
 
     <section className="mb-12">
-      <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-6">Temporal Range</h3>
+      <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-3">Temporal Range</h3>
       <TemporalHistogramSlider 
         sites={sites}
         startDate={startDate}
@@ -484,8 +479,8 @@ const SidebarContent = ({
           setEndDate(end);
         }}
       />
-      <div className="space-y-2 pt-4">
-        <label className="flex items-center gap-3 group cursor-pointer py-1">
+      <div className="space-y-1 pt-2">
+        <label className="flex items-center gap-3 group cursor-pointer py-0.5">
           <input 
             type="checkbox" 
             checked={excludeUnknownStart}
@@ -494,7 +489,7 @@ const SidebarContent = ({
           />
           <span className="font-body text-sm text-on-surface group-hover:text-primary transition-colors">Exclude Unknown Start Dates</span>
         </label>
-        <label className="flex items-center gap-3 group cursor-pointer py-1">
+        <label className="flex items-center gap-3 group cursor-pointer py-0.5">
           <input 
             type="checkbox" 
             checked={excludeUnknownEnd}
@@ -508,9 +503,9 @@ const SidebarContent = ({
 
     <section className="mb-12">
       <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Geographic Focus</h3>
-      <div className="space-y-2">
+      <div className="space-y-1">
         {['England', 'Wales', 'Scotland', 'Ireland'].map(region => (
-          <label key={region} className="flex items-center gap-3 group cursor-pointer py-1">
+          <label key={region} className="flex items-center gap-3 group cursor-pointer py-0.5">
             <input 
               type="checkbox" 
               checked={selectedRegions.includes(region)}
@@ -525,9 +520,9 @@ const SidebarContent = ({
 
     <section className="mb-12">
       <h3 className="font-label text-[12px] uppercase tracking-widest text-primary font-bold mb-4">Certainty</h3>
-      <div className="space-y-2">
+      <div className="space-y-1">
         {['Certain', 'Probable', 'Possible', 'Unlikely'].map(certainty => (
-          <label key={certainty} className="flex items-center gap-3 group cursor-pointer py-1">
+          <label key={certainty} className="flex items-center gap-3 group cursor-pointer py-0.5">
             <input 
               type="checkbox" 
               checked={selectedCertainty.includes(certainty)}

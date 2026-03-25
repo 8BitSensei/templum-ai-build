@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { MapPin, Calendar, ShieldCheck, Tag, ArrowLeft, Loader2 } from 'lucide-react';
 import { useParams, Link } from 'react-router-dom';
@@ -24,6 +24,14 @@ const SiteDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { sites, loading } = useSites();
   const site = sites.find(s => s.id === id);
+
+  useEffect(() => {
+    if (site) {
+      document.title = `🏛️ ${site.name} | Templum`;
+    } else if (!loading) {
+      document.title = "🏛️ Site Not Found | Templum";
+    }
+  }, [site, loading]);
 
   if (loading) {
     return (

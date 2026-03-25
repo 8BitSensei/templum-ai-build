@@ -20,8 +20,8 @@ export const CitationDrawer = () => {
   const site = siteId ? sites.find(s => s.id === siteId) : null;
 
   const citation = site 
-    ? `C. Rolph-Kevlahan, ${site.name}, "Templum." templum.wiki. https://templum.wiki/sites/${site.id} (accessed ${formattedDate}).`
-    : `C. Rolph-Kevlahan, "Templum." templum.wiki. https://templum.wiki/ (accessed ${formattedDate}).`;
+    ? `Charlie Rolph-Kevlahan, ${site.name}, "Templum." templum.wiki. https://templum.wiki/sites/${site.id} (accessed ${formattedDate}).`
+    : `Charlie Rolph-Kevlahan, "Templum." templum.wiki. https://templum.wiki/ (accessed ${formattedDate}).`;
 
   const [copied, setCopied] = React.useState(false);
 
