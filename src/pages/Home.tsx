@@ -39,7 +39,7 @@ const Home = () => {
       className="flex flex-col"
     >
       {/* Hero Section */}
-      <section className="px-8 py-24 flex flex-col items-center text-center bg-surface">
+      <section className="px-8 pt-8 pb-24 flex flex-col items-center text-center bg-surface">
         <motion.h1 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -74,14 +74,14 @@ const Home = () => {
             </div>
             
             {/* Options and Button */}
-            <div className="flex flex-wrap md:flex-nowrap items-center gap-4 bg-surface-container-low p-2 rounded">
-              <div className="flex flex-grow flex-wrap md:flex-nowrap gap-4">
-                <div className="flex flex-col items-start px-4 border-r border-outline/20">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-4 bg-surface-container-low p-6 md:p-2 rounded">
+              <div className="flex flex-col md:flex-row flex-grow gap-6 md:gap-4 w-full">
+                <div className="flex flex-col items-center md:items-start px-4 border-b md:border-b-0 md:border-r border-outline/10 pb-4 md:pb-0 w-full md:w-auto">
                   <span className="font-label text-[10px] text-outline uppercase tracking-widest mb-1">Period</span>
                   <select 
                     value={period}
                     onChange={(e) => setPeriod(e.target.value)}
-                    className="bg-transparent border-none p-0 font-label text-sm text-primary focus:ring-0 cursor-pointer outline-none"
+                    className="bg-transparent border-none p-0 font-label text-sm text-primary focus:ring-0 cursor-pointer outline-none text-center md:text-left"
                   >
                     <option>All Eras</option>
                     <option>Iron Age (150 BCE - 43 CE)</option>
@@ -89,12 +89,12 @@ const Home = () => {
                     <option>Early Medieval (410 CE - 600 CE)</option>
                   </select>
                 </div>
-                <div className="flex flex-col items-start px-4 border-r border-outline/20">
+                <div className="flex flex-col items-center md:items-start px-4 border-b md:border-b-0 md:border-r border-outline/10 pb-4 md:pb-0 w-full md:w-auto">
                   <span className="font-label text-[10px] text-outline uppercase tracking-widest mb-1">Region</span>
                   <select 
                     value={region}
                     onChange={(e) => setRegion(e.target.value)}
-                    className="bg-transparent border-none p-0 font-label text-sm text-primary focus:ring-0 cursor-pointer outline-none"
+                    className="bg-transparent border-none p-0 font-label text-sm text-primary focus:ring-0 cursor-pointer outline-none text-center md:text-left"
                   >
                     <option>All Regions</option>
                     <option>England</option>
@@ -103,12 +103,12 @@ const Home = () => {
                     <option>Scotland</option>
                   </select>
                 </div>
-                <div className="flex flex-col items-start px-4">
+                <div className="flex flex-col items-center md:items-start px-4 w-full md:w-auto">
                   <span className="font-label text-[10px] text-outline uppercase tracking-widest mb-1">Certainty</span>
                   <select 
                     value={certainty}
                     onChange={(e) => setCertainty(e.target.value)}
-                    className="bg-transparent border-none p-0 font-label text-sm text-primary focus:ring-0 cursor-pointer outline-none"
+                    className="bg-transparent border-none p-0 font-label text-sm text-primary focus:ring-0 cursor-pointer outline-none text-center md:text-left"
                   >
                     <option>All Certainty</option>
                     <option>Certain</option>
@@ -120,7 +120,7 @@ const Home = () => {
               </div>
               <button 
                 onClick={handleQuery}
-                className="bg-primary text-on-primary px-12 py-3 rounded-sm font-label text-sm tracking-widest hover:bg-primary-container transition-colors ml-auto"
+                className="bg-primary text-on-primary px-12 py-3 rounded-sm font-label text-sm tracking-widest hover:bg-primary-container transition-colors w-full md:w-auto md:ml-auto"
               >
                 QUERY
               </button>
@@ -130,14 +130,14 @@ const Home = () => {
       </section>
 
       {/* Featured Sites */}
-      <section className="px-8 py-16 bg-surface-container-low">
+      <section className="px-4 md:px-8 py-16 bg-surface-container-low">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-10">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 gap-4">
             <div>
               <span className="font-label text-[12px] text-outline uppercase tracking-[0.2em] block mb-2">Latest Additions</span>
-              <h2 className="text-4xl text-primary">Recently Added Sites</h2>
+              <h2 className="text-3xl md:text-4xl text-primary">Recently Added Sites</h2>
             </div>
-            <Link to="/sites" className="font-label text-sm text-primary border-b-2 border-primary/20 hover:border-primary transition-all pb-1">
+            <Link to="/sites" className="font-label text-sm text-primary border-b-2 border-primary/20 hover:border-primary transition-all pb-1 w-fit">
               VIEW ALL SITES
             </Link>
           </div>
@@ -150,14 +150,14 @@ const Home = () => {
           ) : featuredSites.length > 0 ? (
             <div className="grid grid-cols-12 gap-8">
               {/* Large Feature Card */}
-              <div className="col-span-12 md:col-span-8 group cursor-pointer relative overflow-hidden h-[420px] bg-surface-container-high border border-black/5">
-                <Link to={`/sites/${featuredSites[0].id}`} className="block h-full p-10 flex flex-col justify-center">
+              <div className="col-span-12 md:col-span-8 group cursor-pointer relative overflow-hidden h-[320px] md:h-[420px] bg-surface-container-high border border-black/5">
+                <Link to={`/sites/${featuredSites[0].id}`} className="block h-full p-6 md:p-10 flex flex-col justify-center">
                   <div className="relative z-10">
                     <div className="bg-secondary-container inline-block px-3 py-1 mb-4">
                       <span className="font-label text-[10px] text-on-secondary-container uppercase tracking-widest">LATEST ADDITION</span>
                     </div>
-                    <h3 className="text-5xl text-primary mb-4 italic">{featuredSites[0].name}</h3>
-                    <p className="text-on-surface-variant max-w-xl text-lg leading-relaxed font-body line-clamp-3">
+                    <h3 className="text-3xl md:text-5xl text-primary mb-4 italic">{featuredSites[0].name}</h3>
+                    <p className="text-on-surface-variant max-w-xl text-base md:text-lg leading-relaxed font-body line-clamp-3">
                       {featuredSites[0].description}
                     </p>
                   </div>
@@ -165,11 +165,11 @@ const Home = () => {
               </div>
 
               {/* Small Column */}
-              <div className="col-span-12 md:col-span-4 flex flex-col gap-8">
+              <div className="col-span-12 md:col-span-4 flex flex-col gap-6 md:gap-8">
                 {featuredSites.slice(1, 3).map((site, idx) => (
                   <Link key={site.id} to={`/sites/${site.id}`} className={idx === 0 ? "flex-grow" : ""}>
                     {idx === 0 ? (
-                      <div className="bg-surface-container-high p-8 h-full flex flex-col justify-between group cursor-pointer hover:bg-surface-container-highest transition-colors border border-black/5">
+                      <div className="bg-surface-container-high p-6 md:p-8 h-full flex flex-col justify-between group cursor-pointer hover:bg-surface-container-highest transition-colors border border-black/5">
                         <div>
                           <span className="font-label text-[10px] text-outline uppercase tracking-widest mb-4 block">{site.location}</span>
                           <h3 className="text-2xl text-primary mb-3 italic">{site.name}</h3>
@@ -182,7 +182,7 @@ const Home = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="relative overflow-hidden h-[220px] group cursor-pointer bg-surface-container-high border border-black/5 p-8 flex flex-col justify-center hover:bg-surface-container-highest transition-colors">
+                      <div className="relative overflow-hidden h-[180px] md:h-[220px] group cursor-pointer bg-surface-container-high border border-black/5 p-6 md:p-8 flex flex-col justify-center hover:bg-surface-container-highest transition-colors">
                         <div className="relative z-10">
                           <span className="font-label text-[9px] text-outline uppercase tracking-widest mb-2 block">{site.location}</span>
                           <h4 className="text-xl font-bold text-primary tracking-widest uppercase italic mb-2">{site.name}</h4>

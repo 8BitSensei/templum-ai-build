@@ -36,10 +36,10 @@ export const CitationDrawer = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container/80 backdrop-blur-lg border-t border-primary/10 px-8 py-3 flex items-center justify-between shadow-lg">
-      {/* Mobile Filter Toggle FAB - Anchored to banner top */}
+    <>
+      {/* Mobile Filter Toggle FAB - Decoupled from citation banner */}
       {(location.pathname === '/browse' || location.pathname === '/map' || location.pathname === '/sites') && (
-        <div className="lg:hidden absolute bottom-full right-8 mb-4">
+        <div className="lg:hidden fixed bottom-8 right-8 z-50">
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -53,25 +53,30 @@ export const CitationDrawer = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-4">
-        <BookOpen className="text-primary" size={18} />
-        <div className="flex flex-col">
-          <span className="font-label text-[10px] uppercase font-bold text-primary leading-none">Reference Archive</span>
-          <span className="font-body text-xs italic text-on-surface-variant">
-            Cite this page: {citation}
-          </span>
+      {/* Reference Archive Banner - Only shown on site detail pages */}
+      {siteId && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container/80 backdrop-blur-lg border-t border-primary/10 px-8 py-3 flex items-center justify-between shadow-lg">
+          <div className="flex items-center gap-4">
+            <BookOpen className="text-primary hidden sm:block" size={18} />
+            <div className="flex flex-col">
+              <span className="font-label text-[10px] uppercase font-bold text-primary leading-none">Reference Archive</span>
+              <span className="font-body text-xs italic text-on-surface-variant">
+                Cite this page: {citation}
+              </span>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleCopy}
+              className="text-primary hover:underline font-label text-[10px] uppercase tracking-widest flex items-center gap-2 transition-colors duration-200"
+            >
+              <Copy size={14} className={copied ? "text-green-500" : ""} />
+              {copied ? "Copied!" : "Copy Citation"}
+            </button>
+          </div>
         </div>
-      </div>
-      
-      <div className="flex items-center gap-4">
-        <button 
-          onClick={handleCopy}
-          className="text-primary hover:underline font-label text-[10px] uppercase tracking-widest flex items-center gap-2 transition-colors duration-200"
-        >
-          <Copy size={14} className={copied ? "text-green-500" : ""} />
-          {copied ? "Copied!" : "Copy Citation"}
-        </button>
-      </div>
-    </div>
+      )}
+    </>
   );
 };

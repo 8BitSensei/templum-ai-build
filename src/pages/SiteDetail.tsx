@@ -73,11 +73,16 @@ const SiteDetail = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left Column: Details & Description */}
         <div className="lg:col-span-7">
-          <header className="mb-10">
-            <span className="font-label text-[10px] text-on-surface-variant tracking-[0.2em] uppercase mb-2 block">Site Entry Ref. {site.id}</span>
+          <header className="mb-4">
+            <div className="flex items-center gap-4 mb-2">
+              <span className="font-label text-[10px] text-on-surface-variant tracking-[0.2em] uppercase">Site Entry Ref. {site.id}</span>
+              <span className={`font-label text-[9px] uppercase tracking-widest px-2 py-0.5 border rounded-sm ${getCertaintyStyle(site.certainty)}`}>
+                {site.certainty}
+              </span>
+            </div>
             <h1 className="text-4xl md:text-5xl text-primary italic leading-tight mb-6">{site.name}</h1>
             
-            <div className="grid grid-cols-2 gap-y-4 gap-x-8 py-6 border-y border-black/5">
+            <div className="grid grid-cols-2 gap-y-6 gap-x-8 py-6 border-y border-black/5">
               <div className="flex items-start gap-3">
                 <MapPin size={16} className="text-primary mt-0.5" />
                 <div>
@@ -92,20 +97,12 @@ const SiteDetail = () => {
                   <span className="font-body text-sm font-medium">{site.period}</span>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <ShieldCheck size={16} className="text-primary mt-0.5" />
-                <div>
-                  <span className="font-label text-[9px] uppercase tracking-widest text-on-surface-variant block mb-0.5">Certainty</span>
-                  <span className={`font-label text-[10px] uppercase tracking-widest px-2 py-0.5 border rounded-sm ${getCertaintyStyle(site.certainty)}`}>
-                    {site.certainty}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
+              
+              <div className="flex items-start gap-3 col-span-2">
                 <Tag size={16} className="text-primary mt-0.5" />
                 <div>
                   <span className="font-label text-[9px] uppercase tracking-widest text-on-surface-variant block mb-0.5">Tags</span>
-                  <div className="flex flex-wrap gap-x-2 gap-y-1">
+                  <div className="flex flex-wrap gap-y-1">
                     {site.tags.map((tag, index) => (
                       <React.Fragment key={`${tag}-${index}`}>
                         <Link 
@@ -114,7 +111,7 @@ const SiteDetail = () => {
                         >
                           {tag}
                         </Link>
-                        {index < site.tags.length - 1 && <span className="text-primary/40">,</span>}
+                        {index < site.tags.length - 1 && <span className="text-primary/40 mr-1.5">,</span>}
                       </React.Fragment>
                     ))}
                   </div>
@@ -124,10 +121,10 @@ const SiteDetail = () => {
           </header>
 
           <article className="prose prose-sm max-w-none">
-            <div className="markdown-body font-body text-base leading-relaxed text-on-surface space-y-6">
+            <div className="markdown-body font-body text-base leading-relaxed text-on-surface space-y-4">
               <ReactMarkdown>{site.description}</ReactMarkdown>
               
-              <div className="mt-12 pt-8 border-t border-black/5">
+              <div className="mt-6 pt-6 border-t border-black/5">
                 <h3 className="font-label text-[10px] uppercase tracking-widest text-primary font-bold mb-4">Bibliography</h3>
                 <ul className="space-y-3">
                   {site.bibliography.map((ref, index) => (
