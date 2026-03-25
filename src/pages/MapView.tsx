@@ -85,7 +85,7 @@ const MapView = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   useEffect(() => {
-    document.title = "🏛️ Map | Templum";
+    document.title = "Map | Templum";
   }, []);
 
   useEffect(() => {
@@ -393,44 +393,8 @@ const MapView = () => {
           )}
         </AnimatePresence>
 
-        {/* Legend */}
-        <div className="absolute bottom-10 left-8 z-30">
-          <div className="bg-surface/80 backdrop-blur-lg p-4 shadow-sm border border-black/5">
-            <h4 className="font-label text-[10px] uppercase tracking-widest text-primary font-bold mb-3">Site Certainty</h4>
-            <div className="space-y-3">
-              {[
-                { name: 'Certain', color: 'bg-emerald-500' },
-                { name: 'Probable', color: 'bg-lime-500' },
-                { name: 'Possible', color: 'bg-amber-500' },
-                { name: 'Unlikely', color: 'bg-rose-500' }
-              ].map(item => (
-                <div key={item.name} className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
-                  <span className="font-label text-[10px] text-on-surface-variant uppercase tracking-widest">{item.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </main>
 
-      {/* Footer Bar */}
-      <footer className="fixed bottom-0 left-0 lg:left-72 right-0 h-12 bg-surface-container/90 backdrop-blur-md z-40 flex items-center px-4 lg:px-8 border-t border-black/5">
-        <div className="flex items-center gap-4 lg:gap-8 w-full overflow-x-auto no-scrollbar">
-          <div className="flex-shrink-0 flex items-center gap-2">
-            <FolderArchive className="text-primary" size={16} />
-            <span className="font-label text-[9px] uppercase tracking-widest font-bold whitespace-nowrap">Research Bundle: (04)</span>
-          </div>
-          <div className="hidden sm:flex items-center gap-6 overflow-hidden">
-            <span className="font-label text-[9px] uppercase text-on-surface-variant whitespace-nowrap">Heracleion_Summary.pdf</span>
-            <span className="font-label text-[9px] uppercase text-on-surface-variant whitespace-nowrap">Thonis_Coordinates.csv</span>
-          </div>
-          <button className="ml-auto flex-shrink-0 flex items-center gap-2 group">
-            <span className="font-label text-[9px] uppercase font-bold tracking-widest group-hover:text-primary whitespace-nowrap">Open Archive Drawer</span>
-            <ChevronUp size={14} />
-          </button>
-        </div>
-      </footer>
     </motion.div>
   );
 };

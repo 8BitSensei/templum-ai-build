@@ -27,9 +27,9 @@ const SiteDetail = () => {
 
   useEffect(() => {
     if (site) {
-      document.title = `🏛️ ${site.name} | Templum`;
+      document.title = `${site.name} | Templum`;
     } else if (!loading) {
-      document.title = "🏛️ Site Not Found | Templum";
+      document.title = "Site Not Found | Templum";
     }
   }, [site, loading]);
 

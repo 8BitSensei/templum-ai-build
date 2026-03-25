@@ -7,7 +7,7 @@ const About = () => {
   const { hash } = useLocation();
 
   useEffect(() => {
-    document.title = "🏛️ About | Templum";
+    document.title = "About | Templum";
   }, []);
 
   useEffect(() => {

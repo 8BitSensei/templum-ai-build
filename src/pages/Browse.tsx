@@ -21,7 +21,7 @@ const Browse = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "🏛️ Browse | Templum";
+    document.title = "Browse | Templum";
   }, []);
 
   useEffect(() => {
@@ -246,7 +246,7 @@ const Browse = () => {
               <div>
                 <h1 className="text-3xl md:text-4xl text-on-surface">Sites</h1>
                 <p className="font-body italic text-on-surface-variant mt-1">
-                  {loading ? 'Fetching archive...' : `${filteredSites.length} verified entries found`}
+                  {loading ? 'Fetching archive...' : `${filteredSites.length} entries found`}
                 </p>
               </div>
             </div>

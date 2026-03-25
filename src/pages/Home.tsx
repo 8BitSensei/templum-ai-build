@@ -13,7 +13,7 @@ const Home = () => {
   const [certainty, setCertainty] = useState('All Certainty');
 
   useEffect(() => {
-    document.title = "🏛️ Home | Templum";
+    document.title = "Home | Templum";
   }, []);
 
   const featuredSites = useMemo(() => {
