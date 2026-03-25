@@ -89,12 +89,10 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
 
   const handleStartPan = (event: any, info: any) => {
     if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const localX = info.point.x - rect.left;
     
-    // Calculate raw year for smooth visual feedback
-    const rawYear = xScale.invert(localX);
-    const clampedRawYear = Math.max(minYear, Math.min(rawYear, endDate - step));
+    const deltaYear = xScale.invert(info.delta.x) - xScale.invert(0);
+    const newYear = visualStart + deltaYear;
+    const clampedRawYear = Math.max(minYear, Math.min(newYear, visualEnd - 1)); // Allow fine movement
     setVisualStart(clampedRawYear);
 
     // Calculate snapped year for data updates
@@ -107,11 +105,10 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
 
   const handleEndPan = (event: any, info: any) => {
     if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const localX = info.point.x - rect.left;
     
-    const rawYear = xScale.invert(localX);
-    const clampedRawYear = Math.min(maxYear, Math.max(rawYear, startDate + step));
+    const deltaYear = xScale.invert(info.delta.x) - xScale.invert(0);
+    const newYear = visualEnd + deltaYear;
+    const clampedRawYear = Math.min(maxYear, Math.max(newYear, visualStart + 1));
     setVisualEnd(clampedRawYear);
 
     const snappedYear = Math.round(clampedRawYear / step) * step;
@@ -124,11 +121,10 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
   const handleWindowPan = (event: any, info: any) => {
     if (!containerRef.current || !panStartValues.current) return;
     
-    const deltaX = info.offset.x;
-    const deltaYear = xScale.invert(deltaX) - xScale.invert(0);
+    const deltaYear = xScale.invert(info.delta.x) - xScale.invert(0);
     
-    const range = panStartValues.current.end - panStartValues.current.start;
-    let newStart = panStartValues.current.start + deltaYear;
+    const range = visualEnd - visualStart;
+    let newStart = visualStart + deltaYear;
     let newEnd = newStart + range;
 
     if (newStart < minYear) {
@@ -143,7 +139,7 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
     setVisualEnd(newEnd);
 
     const snappedStart = Math.round(newStart / step) * step;
-    const snappedEnd = snappedStart + range;
+    const snappedEnd = snappedStart + Math.round(range / step) * step;
 
     if (snappedStart !== startDate || snappedEnd !== endDate) {
       onRangeChange(snappedStart, snappedEnd);
@@ -157,7 +153,7 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
   };
 
   return (
-    <div className="w-full space-y-3" ref={containerRef}>
+    <div className="w-full space-y-3 touch-none" ref={containerRef}>
       <div className="relative h-16 w-full select-none">
         {containerWidth > 0 && (
           <>
@@ -201,29 +197,38 @@ const TemporalHistogramSlider: React.FC<TemporalHistogramSliderProps> = ({
 
             {/* Handles */}
             <motion.div
-              className="absolute bottom-[10px] w-3 h-3 bg-white border-2 border-primary rounded-full shadow-sm cursor-ew-resize z-30"
-              style={{ left: xScale(visualStart) - 6 }}
-              whileHover={{ scale: 1.3 }}
-              whileTap={{ scale: 0.9 }}
+              className="absolute bottom-[2px] w-6 h-6 flex items-center justify-center cursor-ew-resize z-30"
+              style={{ left: xScale(visualStart) - 12 }}
               onPanStart={handlePanStart}
               onPan={handleStartPan}
               onPanEnd={() => {
                 panStartValues.current = null;
                 setIsDragging(false);
               }}
-            />
+            >
+              <motion.div 
+                className="w-4 h-4 bg-white border-2 border-primary rounded-full shadow-md"
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 1.4 }}
+              />
+            </motion.div>
+
             <motion.div
-              className="absolute bottom-[10px] w-3 h-3 bg-white border-2 border-primary rounded-full shadow-sm cursor-ew-resize z-30"
-              style={{ left: xScale(visualEnd) - 6 }}
-              whileHover={{ scale: 1.3 }}
-              whileTap={{ scale: 0.9 }}
+              className="absolute bottom-[2px] w-6 h-6 flex items-center justify-center cursor-ew-resize z-30"
+              style={{ left: xScale(visualEnd) - 12 }}
               onPanStart={handlePanStart}
               onPan={handleEndPan}
               onPanEnd={() => {
                 panStartValues.current = null;
                 setIsDragging(false);
               }}
-            />
+            >
+              <motion.div 
+                className="w-4 h-4 bg-white border-2 border-primary rounded-full shadow-md"
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 1.4 }}
+              />
+            </motion.div>
           </>
         )}
       </div>
